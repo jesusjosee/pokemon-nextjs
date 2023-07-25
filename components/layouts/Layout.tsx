@@ -1,13 +1,14 @@
 import Head from 'next/head'
+import { Navbar } from '../ui'
 
 interface Props{
     children : React.ReactNode,
     title? : string
 }
 
-// Las dos formas funcionan
+
 export const Layout = ({ children, title }: Props) => {
-// export const Layout = ({ children, title }: {children:React.ReactNode, title?:string}) => {
+
   return (
     <>
         <Head>
@@ -18,9 +19,9 @@ export const Layout = ({ children, title }: Props) => {
 
         </Head>
 
-        {/* Navbar */}
+        <Navbar/>
 
-        <main>
+        <main style={{padding: '0px 20px'}}>
             {children}
         </main>
     </>
