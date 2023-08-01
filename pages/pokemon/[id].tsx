@@ -1,16 +1,48 @@
+import { useEffect, useState } from 'react'
+import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
+import { Button, Card, Container, Grid, Image, Text } from '@nextui-org/react'
+
 import { pokeApi } from '@/api'
 import { Layout } from '@/components/layouts'
 import { Pokemon } from '@/interfaces'
-import { Button, Card, Container, Grid, Image, Text } from '@nextui-org/react'
-import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
+import { localFavorites } from '@/utils'
+
+import confetti from 'canvas-confetti'
 
 interface Props {
   pokemon: Pokemon
 }
 
 const PokemonPage: NextPage<Props> = ({pokemon}) => {
+
+  const [isInFavorites, setisInFavorites] = useState(false)
+
+  const onToggleFavorite = () => {
+    localFavorites.toggleFavorite(pokemon.id)
+    setisInFavorites(!isInFavorites)
+
+    if (isInFavorites) return;
+
+    confetti({
+      zIndex: 999,
+      particleCount: 100,
+      spread: 160,
+      angle: -100,
+      origin: {
+        x: 1,
+        y: 0,
+      }
+    })
+
+  }
+
+  useEffect(() => {
+    setisInFavorites(localFavorites.existInFavorites(pokemon.id))
+  }, [pokemon.id])
+  
+
   return (
-    <Layout title='Algun Pokemon'>
+    <Layout title={pokemon.name}>
         <Grid.Container css={{ marginTop: '5px' }} gap={2} >
           <Grid xs={12} sm={4} >
               <Card isPressable css={{ padding: '30px' }}>
@@ -29,7 +61,13 @@ const PokemonPage: NextPage<Props> = ({pokemon}) => {
             <Card>
               <Card.Header css={{display: 'flex', justifyContent: 'space-between'}}>
                 <Text h1 transform='capitalize'> { pokemon.name } </Text>
-                <Button color="gradient" ghost>Guardar en Favoritos</Button>
+                <Button 
+                  color="gradient" 
+                  ghost={!isInFavorites}
+                  onPress = {onToggleFavorite}
+                  >
+                   { isInFavorites ? 'En Favoritos' : ' Guardar en Favoritos' }
+                </Button>
               </Card.Header>
               <Card.Body>
                 <Text size={30}>Sprites:</Text>
